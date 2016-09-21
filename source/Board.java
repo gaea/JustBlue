@@ -62,88 +62,90 @@ public class Board extends BranchGroup {
 
 	canvas3D.addMouseListener(new MouseAdapter(){
 	    public void mouseClicked(MouseEvent e) {
-		machineResponce(e);
+			machineResponce(e);
 	    }
 	});
     
 	this.pickCanvas.setMode(PickTool.GEOMETRY_INTERSECT_INFO); 
         this.pickCanvas.setTolerance(0.0f);
-	compile();
+		compile();
     }
 
     public void machineResponce(MouseEvent e){
-	pickCanvas.setShapeLocation(e);
-	PickResult result = pickCanvas.pickClosest();
-	boolean gana = false;
-	if (result == null) {
-	      System.out.println("Nothing picked");
-	} 
-	else {
-	    Primitive p = (Primitive)result.getNode(PickResult.PRIMITIVE);
-	    
-	    if (p != null) {
-		String pos [] = ((String)(p.getUserData())).split(",");
-		if(tablero.validarPosicion(new Point(Integer.parseInt(pos[0]), Integer.parseInt(pos[1])))){
-		    tablero.setPosCaballo(new Point(Integer.parseInt(pos[0]), Integer.parseInt(pos[1])));
+		pickCanvas.setShapeLocation(e);
+		PickResult result = pickCanvas.pickClosest();
+		boolean gana = false;
+		if (result == null) {
+		    System.out.println("Nothing picked");
+		} 
+		else {
+		    Primitive p = (Primitive)result.getNode(PickResult.PRIMITIVE);
 		    
-		    //p.getAppearance(Box.LEFT).getMaterial().setDiffuseColor(new Color3f(Color.BLACK));
-		    /************************************************************************/
-		    if((Integer.parseInt(pos[0])+Integer.parseInt(pos[1])) % 2 == 0){
-		    	p.setAppearance(apparBlueShadow);
-		    }
-		    else{
-		    	p.setAppearance(apparWhiteShadow);
-		    }
-		    /*********************************************************************/
-		    
-		    Transform3D t3d = new Transform3D();
-		    Vector3f translate = new Vector3f();
-		    translate.set((float)tablero.getPosCaballo().getY(), 0.0f, (float)tablero.getPosCaballo().getX());
-		    t3d.setTranslation(translate);
-		    caballo.setTransform(t3d);
+		    if (p != null) {
+				String pos [] = ((String)(p.getUserData())).split(",");
+				if(tablero.validarPosicion(new Point(Integer.parseInt(pos[0]), Integer.parseInt(pos[1])))){
+				    tablero.setPosCaballo(new Point(Integer.parseInt(pos[0]), Integer.parseInt(pos[1])));
+				    
+				    if((Integer.parseInt(pos[0])+Integer.parseInt(pos[1])) % 2 == 0){
+				    	p.setAppearance(apparBlueShadow);
+				    }
+				    else{
+				    	p.setAppearance(apparWhiteShadow);
+				    }
+				    
+				    Transform3D t3d = new Transform3D();
+				    Vector3f translate = new Vector3f();
+				    translate.set((float)tablero.getPosCaballo().getY(), 0.0f, (float)tablero.getPosCaballo().getX());
+				    t3d.setTranslation(translate);
+				    caballo.setTransform(t3d);
 
-		    Tablero tempTablero = tablero.clonar();
-		    MinMaxSolucion minMax = new MinMaxSolucion(tempTablero, dificultad);
-		    Point point = minMax.respuesta();
-		    
-		    if(point.getX() != 7.0){
-			tablero.setPosCaballo(point);
-			t3d = new Transform3D();
-			translate = new Vector3f();
-			translate.set((float)tablero.getPosCaballo().getY(), 0.0f, (float)tablero.getPosCaballo().getX());
-			t3d.setTranslation(translate);
-			caballo.setTransform(t3d);
-			
-			//(floor[(int)point.getX()][(int)point.getY()]).getAppearance(Box.LEFT).getMaterial().setDiffuseColor(new Color3f(Color.BLACK));
-			/************************************************************************/
-			if(((int)point.getX()+(int)point.getY())%2 == 0){
-		    	(floor[(int)point.getX()][(int)point.getY()]).setAppearance(apparBlueShadow);
+				    Tablero tempTablero = tablero.clonar();
+				    MinMaxSolucion minMax = new MinMaxSolucion(tempTablero, dificultad);
+				    Point point = minMax.respuesta();
+				    tempTablero = null;
+				    minMax = null;
+				    
+				    if(point.getX() != 7.0) {
+						tablero.setPosCaballo(point);
+						t3d = new Transform3D();
+						translate = new Vector3f();
+						translate.set((float)tablero.getPosCaballo().getY(), 0.0f, (float)tablero.getPosCaballo().getX());
+						t3d.setTranslation(translate);
+						caballo.setTransform(t3d);
+						
+						if(((int)point.getX()+(int)point.getY())%2 == 0){
+					    	(floor[(int)point.getX()][(int)point.getY()]).setAppearance(apparBlueShadow);
+					    }
+					    else{
+					    	(floor[(int)point.getX()][(int)point.getY()]).setAppearance(apparWhiteShadow);
+					    }
+						
+						System.out.println("respuesta: "+point.getX()+", "+point.getY());
+				    }
+				    else{
+						gana = true;
+						javax.swing.JOptionPane.showMessageDialog(null, "Ganaste !!!");
+				    }
+
+				    Tablero tableroTemp = tablero.clonar();
+
+				    if(tableroTemp.pierde() && !gana){
+				    	
+						javax.swing.JOptionPane.showMessageDialog(null, "Perdiste !!!");
+				    }
+
+				    tableroTemp = null;
+				}
+				else{
+				    System.out.println("soy un caballo !!!! no puedo llegar ahi o... quizas ya estube alli");
+				}
 		    }
 		    else{
-		    	(floor[(int)point.getX()][(int)point.getY()]).setAppearance(apparWhiteShadow);
-		    }
-			/*****************************************************************************/
-			
-			
-			System.out.println("respuesta: "+point.getX()+", "+point.getY());
-		    }
-		    else{
-			gana = true;
-			javax.swing.JOptionPane.showMessageDialog(null, "Ganaste !!!");
-		    }
-		    Tablero tableroTemp = tablero.clonar();
-		    if(tableroTemp.pierde() && !gana){
-			javax.swing.JOptionPane.showMessageDialog(null, "Perdiste !!!");
+				System.out.println("tengo hambre...");
 		    }
 		}
-		else{
-		    System.out.println("soy caballo !!!! no puedo llegar ahi o... quizas ya estube alli");
-		}
-	    }  
-	    else{
-		System.out.println("tengo hambre...");
-	    }
-	}
+
+		System.gc();
     }
     
     public void loadAppearances(){
@@ -213,141 +215,140 @@ public class Board extends BranchGroup {
     }
 
     public void addHorse(){
-	BranchGroup caballoBG = new BranchGroup();
-      
-	TransformGroup objScale = new TransformGroup();
-	Transform3D t3d = new Transform3D();
-	t3d.setScale(0.002);
-	
-	Transform3D T3D;
-	Vector3f translate = new Vector3f();
-	
-	T3D = new Transform3D();
-	translate.set(0.0f , 0.7f, -0.5f );
-	Transform3D rotViewHorse= new Transform3D();
-	rotViewHorse.rotX(-Math.PI/2.0);
-	
-	T3D.setTranslation(translate);
-	T3D.mul(t3d);
-	T3D.mul(rotViewHorse);
-	objScale.setTransform(T3D);
+		BranchGroup caballoBG = new BranchGroup();
+	      
+		TransformGroup objScale = new TransformGroup();
+		Transform3D t3d = new Transform3D();
+		t3d.setScale(0.002);
+		
+		Transform3D T3D;
+		Vector3f translate = new Vector3f();
+		
+		T3D = new Transform3D();
+		translate.set(0.0f , 0.7f, -0.5f );
+		Transform3D rotViewHorse= new Transform3D();
+		rotViewHorse.rotX(-Math.PI/2.0);
+		
+		T3D.setTranslation(translate);
+		T3D.mul(t3d);
+		T3D.mul(rotViewHorse);
+		objScale.setTransform(T3D);
 
-	caballoBG.addChild(objScale);
+		caballoBG.addChild(objScale);
 
-	TransformGroup objCaballo = new TransformGroup();
-	objCaballo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-	objCaballo.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-	objScale.addChild(objCaballo);
+		TransformGroup objCaballo = new TransformGroup();
+		objCaballo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		objCaballo.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+		objScale.addChild(objCaballo);
 
-	ModelLoader loader = new ModelLoader();
+		ModelLoader loader = new ModelLoader();
 
-	Scene horse = null;
-	try {
-	    horse = loader.load("../3ds/horse.3ds");
-	    
-	} catch (FileNotFoundException e) {
-	    System.err.println(e);
-	    System.exit(1);
-	} catch (ParsingErrorException e) {
-	    System.err.println(e);
-	    System.exit(1);
-	} catch (IncorrectFormatException e) {
-	    System.err.println(e);
-	    System.exit(1);
-	}
+		Scene horse = null;
+		try {
+		    horse = loader.load("../3ds/horse.3ds");
+		} catch (FileNotFoundException e) {
+		    System.err.println(e);
+		    System.exit(1);
+		} catch (ParsingErrorException e) {
+		    System.err.println(e);
+		    System.exit(1);
+		} catch (IncorrectFormatException e) {
+		    System.err.println(e);
+		    System.exit(1);
+		}
 
-	BranchGroup horseBG = horse.getSceneGroup();
-	horseBG.removeChild(0);
-	objCaballo.addChild(horseBG);
+		BranchGroup horseBG = horse.getSceneGroup();
+		horseBG.removeChild(0);
+		objCaballo.addChild(horseBG);
 
-	caballo = new TransformGroup();
-	caballo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
-	caballo.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
-	caballo.addChild(caballoBG);
-	
-	Transform3D posCaballo = new Transform3D();
-	posCaballo.setTranslation(new Vector3f ((float)tablero.getPosCaballo().getY(), 0.0f, (float)tablero.getPosCaballo().getX()));
-	caballo.setTransform(posCaballo);
-	
-	addChild(caballo);
+		caballo = new TransformGroup();
+		caballo.setCapability(TransformGroup.ALLOW_TRANSFORM_WRITE);
+		caballo.setCapability(TransformGroup.ALLOW_TRANSFORM_READ);
+		caballo.addChild(caballoBG);
+		
+		Transform3D posCaballo = new Transform3D();
+		posCaballo.setTranslation(new Vector3f ((float)tablero.getPosCaballo().getY(), 0.0f, (float)tablero.getPosCaballo().getX()));
+		caballo.setTransform(posCaballo);
+		
+		addChild(caballo);
     }
 
     public void addBackground(){
-	Background background = new Background();
-	background.setColor( 0.0f, 0.0f, 0.0f );
-	background.setApplicationBounds(new BoundingSphere());
-	addChild(background);
+		Background background = new Background();
+		background.setColor( 0.0f, 0.0f, 0.0f );
+		background.setApplicationBounds(new BoundingSphere());
+		addChild(background);
     }
 
     public void addLight(){
-	Color3f ambientColour = new Color3f(0.2f, 0.2f, 0.2f);
-	AmbientLight ambientLightNode = new AmbientLight(ambientColour);
-	ambientLightNode.setInfluencingBounds(bounds);
+		Color3f ambientColour = new Color3f(0.2f, 0.2f, 0.2f);
+		AmbientLight ambientLightNode = new AmbientLight(ambientColour);
+		ambientLightNode.setInfluencingBounds(bounds);
 
-	Color3f lightColour = new Color3f(1.0f, 1.0f, 1.0f);
-	Vector3f lightDir = new Vector3f(-1.0f, -1.0f, -0.5f);
-	DirectionalLight light = new DirectionalLight(lightColour, lightDir);
-	light.setInfluencingBounds(bounds);
+		Color3f lightColour = new Color3f(1.0f, 1.0f, 1.0f);
+		Vector3f lightDir = new Vector3f(-1.0f, -1.0f, -0.5f);
+		DirectionalLight light = new DirectionalLight(lightColour, lightDir);
+		light.setInfluencingBounds(bounds);
 
-	addChild(ambientLightNode);
-	addChild(light);
+		addChild(ambientLightNode);
+		addChild(light);
     }
 
-      public void addCamera(){
-	  Transform3D T3D;
-	  Vector3f translate = new Vector3f();
-	  
-	  T3D = new Transform3D();
-	  translate.set(2.5f, 4.5f, 13.0f);
-	  
-	  Transform3D rotViewScene = new Transform3D();
-	  rotViewScene.rotX(-Math.PI/8.0);
-	  
-	  T3D.setTranslation(translate);
-	  T3D.mul(rotViewScene);
-	  vpTrans.setTransform(T3D);
+	public void addCamera(){
+		Transform3D T3D;
+		Vector3f translate = new Vector3f();
 
-	  keyNavCamara = new KeyNavigatorBehavior(vpTrans);
-	  keyNavCamara.setSchedulingBounds(bounds);
-	  addChild(keyNavCamara);
-      }
+		T3D = new Transform3D();
+		translate.set(2.5f, 4.5f, 13.0f);
+
+		Transform3D rotViewScene = new Transform3D();
+		rotViewScene.rotX(-Math.PI/8.0);
+
+		T3D.setTranslation(translate);
+		T3D.mul(rotViewScene);
+		vpTrans.setTransform(T3D);
+
+		keyNavCamara = new KeyNavigatorBehavior(vpTrans);
+		keyNavCamara.setSchedulingBounds(bounds);
+		addChild(keyNavCamara);
+	}
       
-      public void setDificultad(int dificultad){
-	  	this.dificultad = dificultad;
-      }
+	public void setDificultad(int dificultad){
+		this.dificultad = dificultad;
+	}
       
-      public void addMaze(){
-		  for(int i=0; i < 6; i++){
-		      for(int j=0; j < 6; j++){
-				  Transform3D t3dSpf = new Transform3D();
-				  t3dSpf.setTranslation( new Vector3d(((float)j), 0.0, (float)i));
-				  TransformGroup vpTransSpf = new TransformGroup(t3dSpf);
-				  
-				  if( ((i+j)%2) == 0 ){
+	public void addMaze(){
+		for(int i=0; i < 6; i++){
+			for(int j=0; j < 6; j++){
+				Transform3D t3dSpf = new Transform3D();
+				t3dSpf.setTranslation( new Vector3d(((float)j), 0.0, (float)i));
+				TransformGroup vpTransSpf = new TransformGroup(t3dSpf);
+
+				if( ((i+j)%2) == 0 ){
 					Box box = new Box(0.5f, 0.1f, 0.5f, Box.GENERATE_NORMALS | Box.ENABLE_APPEARANCE_MODIFY, apparBlue);
-					
+
 					if( j == (int)tablero.getPosCaballo().getY() && i == (int)tablero.getPosCaballo().getX() ){
 						box = new Box(0.5f, 0.1f, 0.5f, Box.GENERATE_NORMALS | Box.ENABLE_APPEARANCE_MODIFY, apparBlueShadow);
-				    }
-					
-				    box.setUserData(i+","+j);
-				    vpTransSpf.addChild(box);
-				    addChild(vpTransSpf);
-				    floor[i][j] = box;
-				  }
-				  else{
+					}
+
+					box.setUserData(i+","+j);
+					vpTransSpf.addChild(box);
+					addChild(vpTransSpf);
+					floor[i][j] = box;
+				}
+				else{
 					Box box = new Box(0.5f, 0.1f, 0.5f, Box.GENERATE_NORMALS | Box.ENABLE_APPEARANCE_MODIFY, apparWhite);
-					
+
 					if( j == (int)tablero.getPosCaballo().getY() && i == (int)tablero.getPosCaballo().getX() ){
 						box = new Box(0.5f, 0.1f, 0.5f, Box.GENERATE_NORMALS | Box.ENABLE_APPEARANCE_MODIFY, apparWhiteShadow);
-				    }
-					
-				    box.setUserData(i+","+j);
-				    vpTransSpf.addChild(box);
-				    addChild(vpTransSpf);
-				    floor[i][j] = box;
-				  }
-		      }
-		  }
-      }
+					}
+
+					box.setUserData(i+","+j);
+					vpTransSpf.addChild(box);
+					addChild(vpTransSpf);
+					floor[i][j] = box;
+				}
+			}
+		}
+	}
 }

@@ -15,7 +15,7 @@ import java.util.*;
 
 public class JustBlueGUI extends JFrame {
     public JustBlueGUI() {
-	try {
+		try {
             UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
         }
         catch ( Exception e ) {
@@ -27,128 +27,131 @@ public class JustBlueGUI extends JFrame {
         this.setMinimumSize(new Dimension(900, 700));
         this.setResizable(false);
 	
-	java.awt.Dimension pantalla = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		java.awt.Dimension pantalla = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         java.awt.Dimension dVentana = this.getSize();
         this.setLocation((pantalla.width - dVentana.width) / 2,(pantalla.height - dVentana.height) / 2);
 	
-	this.setLayout(new BorderLayout());
+		this.setLayout(new BorderLayout());
 
-	jButtonStart = new JButton("empezar");
-	jPanelcontrol = new JPanel();
-	jComboBoxDificultad = new JComboBox(new javax.swing.DefaultComboBoxModel(new String[] {"pricipiante", "amateur", "experto"}));
+		jButtonStart = new JButton("empezar");
+		jPanelcontrol = new JPanel();
+		jComboBoxDificultad = new JComboBox(new javax.swing.DefaultComboBoxModel(new String[] {"pricipiante", "amateur", "experto"}));
 
-	this.add("Center", paint);
-	this.add("South", jPanelcontrol);
+		this.add("Center", paint);
+		this.add("South", jPanelcontrol);
 
-	jButtonStart.addActionListener(new java.awt.event.ActionListener() {
+		jButtonStart.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 empezarJuego();
             }
         });
 	
-	principiante = new JRadioButton("principiante");
-	amateur = new JRadioButton("amateur");
-	experto = new JRadioButton("experto");
+		principiante = new JRadioButton("principiante");
+		amateur = new JRadioButton("amateur");
+		experto = new JRadioButton("experto");
 	
-	principiante.addActionListener(new java.awt.event.ActionListener() {
+		principiante.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionPerformedPrincipiante(evt);
             }
         });
 	
-	amateur.addActionListener(new java.awt.event.ActionListener() {
+		amateur.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionPerformedAmateur(evt);
             }
         });
 	
-	experto.addActionListener(new java.awt.event.ActionListener() {
+		experto.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 actionPerformedExperto(evt);
             }
         });
 
-	jPanelcontrol.add(new JLabel("Nivel de Dificultad : "));
-	jPanelcontrol.add(principiante);
-	jPanelcontrol.add(amateur);
-	jPanelcontrol.add(experto);
-	jPanelcontrol.add( "East", jButtonStart);
+		jPanelcontrol.add(new JLabel("Nivel de Dificultad : "));
+		jPanelcontrol.add(principiante);
+		jPanelcontrol.add(amateur);
+		jPanelcontrol.add(experto);
+		jPanelcontrol.add( "East", jButtonStart);
 
-	this.pack();
-	this.setVisible(true);
+		this.pack();
+		this.setVisible(true);
     }
 
     public void empezarJuego(){
+    	JFrame gameScreen = null;
+    	Tablero tablero = null;
+    	System.gc();
 
-	if(dificultad != 0){
-	    JFrame gameScreen = new JFrame("Just Blue");
-	    gameScreen.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-	    gameScreen.setTitle("Just Blue");
-	    gameScreen.setMinimumSize(new Dimension(900, 700));
-	    gameScreen.setResizable(false);
-	    
-	    java.awt.Dimension pantalla = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-	    java.awt.Dimension dVentana = gameScreen.getSize();
-	    gameScreen.setLocation((pantalla.width - dVentana.width) / 2,(pantalla.height - dVentana.height) / 2);
-	    
-	    gameScreen.setLayout(new BorderLayout());
-	    GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
+		if(dificultad != 0){
+		    gameScreen = new JFrame("Just Blue");
+		    gameScreen.setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		    gameScreen.setTitle("Just Blue");
+		    gameScreen.setMinimumSize(new Dimension(900, 700));
+		    gameScreen.setResizable(false);
+		    
+		    java.awt.Dimension pantalla = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+		    java.awt.Dimension dVentana = gameScreen.getSize();
+		    gameScreen.setLocation((pantalla.width - dVentana.width) / 2,(pantalla.height - dVentana.height) / 2);
+		    
+		    gameScreen.setLayout(new BorderLayout());
+		    GraphicsConfiguration config = SimpleUniverse.getPreferredConfiguration();
 
-	    Canvas3D canvas3D = new Canvas3D(config);
+		    Canvas3D canvas3D = new Canvas3D(config);
 
-	    SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
-	    simpleU.getViewingPlatform().setNominalViewingTransform();
+		    SimpleUniverse simpleU = new SimpleUniverse(canvas3D);
+		    simpleU.getViewingPlatform().setNominalViewingTransform();
 
-	    View view = simpleU.getViewer().getView();
-	    view.setTransparencySortingPolicy(View.TRANSPARENCY_SORT_GEOMETRY);
+		    View view = simpleU.getViewer().getView();
+		    view.setTransparencySortingPolicy(View.TRANSPARENCY_SORT_GEOMETRY);
 
-	    ViewingPlatform viewingPlatform = simpleU.getViewingPlatform();
-	    OrbitBehavior orbit = new OrbitBehavior(canvas3D, OrbitBehavior.REVERSE_ALL);
-	    BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
-	    orbit.setSchedulingBounds(bounds);
-	    viewingPlatform.setViewPlatformBehavior(orbit);
+		    ViewingPlatform viewingPlatform = simpleU.getViewingPlatform();
+		    OrbitBehavior orbit = new OrbitBehavior(canvas3D, OrbitBehavior.REVERSE_ALL);
+		    BoundingSphere bounds = new BoundingSphere(new Point3d(0.0, 0.0, 0.0), 100.0);
+		    orbit.setSchedulingBounds(bounds);
+		    viewingPlatform.setViewPlatformBehavior(orbit);
 
-	    tablero = new Tablero(6, 6);
-	    tablero.setPosCaballo(new Point((int)(Math.random()*6), (int)(Math.random()*6)));
-	    
-	    board = new Board(simpleU, canvas3D, tablero, dificultad);
-	    simpleU.addBranchGraph(board);
-	    
-	    gameScreen.add("Center", canvas3D);
-	    gameScreen.setVisible(true);
+		    tablero = new Tablero(6, 6);
+		    tablero.setPosCaballo(new Point((int)(Math.random()*6), (int)(Math.random()*6)));
+		    
+		    board = new Board(simpleU, canvas3D, tablero, dificultad);
+		    simpleU.addBranchGraph(board);
+		    
+		    gameScreen.add("Center", canvas3D);
+		    gameScreen.setVisible(true);
 
-	    experto.setSelected(false);
-	    principiante.setSelected(false);
-	    amateur.setSelected(false);
-	    dificultad = 0;
-	    //jButtonStart.setEnabled(false);
-	}
-	else{
-	    JOptionPane.showMessageDialog(this, "Selecciona un nivel de dificultad !!!");
-	}
+		    experto.setSelected(false);
+		    principiante.setSelected(false);
+		    amateur.setSelected(false);
+		    dificultad = 0;
+		}
+		else{
+		    JOptionPane.showMessageDialog(this, "Selecciona un nivel de dificultad !!!");
+		}
     }
     
     public void actionPerformedPrincipiante(java.awt.event.ActionEvent evt){
-	dificultad = 2;
-	amateur.setSelected(false);
-	experto.setSelected(false);
+		dificultad = 2;
+		amateur.setSelected(false);
+		experto.setSelected(false);
     }
     
     public void actionPerformedAmateur(java.awt.event.ActionEvent evt){
-	dificultad = 4;
-	experto.setSelected(false);
-	principiante.setSelected(false);
+		dificultad = 4;
+		experto.setSelected(false);
+		principiante.setSelected(false);
     }
     
     public void actionPerformedExperto(java.awt.event.ActionEvent evt){
-	dificultad = 8;
-	principiante.setSelected(false);
-	amateur.setSelected(false);
+		dificultad = 11;
+		principiante.setSelected(false);
+		amateur.setSelected(false);
     }
 
     public static void main(String arg[]){
-	new JustBlueGUI();
+		new JustBlueGUI();
     }
+
     private JLabel prueba;
     private JRadioButton principiante;
     private JRadioButton amateur;
